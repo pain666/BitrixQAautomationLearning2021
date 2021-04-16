@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "atFrameWork2", "atFrameWork2\atFrameWork2.csproj", "{C2DC7E9C-0A74-4EBE-A4D6-E1AA89439428}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "atFrameWork2", "atFrameWork2\atFrameWork2.csproj", "{C2DC7E9C-0A74-4EBE-A4D6-E1AA89439428}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{679A25A3-F54F-41B0-BB3A-E30EF390920C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{C2DC7E9C-0A74-4EBE-A4D6-E1AA89439428}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2DC7E9C-0A74-4EBE-A4D6-E1AA89439428}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2DC7E9C-0A74-4EBE-A4D6-E1AA89439428}.Release|Any CPU.Build.0 = Release|Any CPU
+		{679A25A3-F54F-41B0-BB3A-E30EF390920C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{679A25A3-F54F-41B0-BB3A-E30EF390920C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{679A25A3-F54F-41B0-BB3A-E30EF390920C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{679A25A3-F54F-41B0-BB3A-E30EF390920C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
