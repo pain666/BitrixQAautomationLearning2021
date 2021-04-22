@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -33,31 +35,24 @@ namespace atFrameWork2
 
         private void BtnDo_Click(object sender, EventArgs e)
         {
-            ICanFly kesha54 = new Parrot(Color.Black);
+            string portalUrl = "https://yandex.ru";
+            driver = new ChromeDriver();
+            var chromeDriver = driver;
+            //chromeDriver.Navigate().GoToUrl(portalUrl);
+            chromeDriver.Manage().Window.Maximize();
+            IWebElement searchInput = chromeDriver.FindElement(By.XPath("//div[contains(@class, 'search')]//input[@id='text']"));
+            searchInput.SendKeys("как писать автотесты" + OpenQA.Selenium.Keys.Enter);
+            //IWebElement searchSubmitBtn = chromeDriver.FindElement(By.XPath("//button[@type='submit']"));
+            //searchSubmitBtn.Click();
 
-            var keshas = new List<ICanFly>
-            {
-                new Parrot(Color.Black),
-                new Parrot(Color.Brown),
-                new Parrot(Color.Yellow),
-                new Raven()
-            };
 
-            foreach (var bird in keshas)
-            {
-                bird.Fly();
-            }
-
-            //tb.Text = "Цвет кеши в данный момент = " + kesha.Color;
+            var taskFrame = chromeDriver.FindElement(By.XPath("//iframe[@class='side-panel-iframe']"));
+            chromeDriver.SwitchTo().Frame(taskFrame);
+            var delBtn = chromeDriver.FindElement(By.XPath("//span[contains(@class,'task-form-field-item-delete')]"));
+            delBtn.Click();
+            chromeDriver.SwitchTo().DefaultContent();
         }
 
-        private void DoVeryImportantLongJob()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                BeginInvoke(new MethodInvoker(() => { tb.Text += "!"; }));
-                Thread.Sleep(100);
-            }
-        }
+        static IWebDriver driver = default;
     }
 }
