@@ -55,6 +55,22 @@ namespace atFrameWork2.SeleniumFramework
             }, driver);
         }
 
+        public void AssertTextContains(IWebDriver driver, string expectedText, string failMessage)
+        {
+            PrintActionInfo(nameof(AssertTextContains));
+
+            Execute(targetElement =>
+            {
+                string factText = targetElement.Text;
+
+                if(string.IsNullOrEmpty(factText) || !factText.Contains(expectedText))
+                {
+                    Log.Error(failMessage + Environment.NewLine +
+                        $"Ожидалось наличие подстроки: {expectedText}, но было:{Environment.NewLine}{factText}");
+                }
+            }, driver);
+        }
+
         void Execute(Action<IWebElement> seleniumCode, IWebDriver driver)
         {
             foreach (var locator in Locators)

@@ -1,4 +1,5 @@
-﻿using atFrameWork2.TestCases;
+﻿using atFrameWork2.BaseFramework;
+using atFrameWork2.TestCases;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
@@ -18,8 +19,6 @@ namespace atFrameWork2
 {
     public partial class MainForm : Form
     {
-        public static MainForm form;
-        
         Button btnDo = new Button()
         {
             Text = "Нажми меня скорее",
@@ -30,7 +29,9 @@ namespace atFrameWork2
         public MainForm()
         {
             InitializeComponent();
-            form = this;
+            CaseCollectionBuilder.ActivateTestCaseProvidersInstances();
+            //TODO в этом месте генерация интерфейса дерева кейсов
+
             btnDo.Click += BtnDo_Click;
             this.Controls.Add(btnDo);
             this.Controls.Add(tb);
@@ -38,9 +39,7 @@ namespace atFrameWork2
 
         private void BtnDo_Click(object sender, EventArgs e)
         {
-            Case_Tasks.CreateTask();
+            //TODO тут проверка галок на отмеченность и запуск управляющего ходом тестов потока с отмеченными кейсами
         }
-
-        static IWebDriver driver = default;
     }
 }
