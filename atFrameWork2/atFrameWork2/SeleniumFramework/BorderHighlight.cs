@@ -27,7 +27,7 @@ namespace Aqua.Selenium.Framework
                 }
                 catch (Exception e)
                 {
-
+                    
                 }
             }
         }

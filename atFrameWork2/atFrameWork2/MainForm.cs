@@ -1,5 +1,8 @@
-﻿using OpenQA.Selenium;
+﻿using atFrameWork2.TestCases;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -35,22 +38,7 @@ namespace atFrameWork2
 
         private void BtnDo_Click(object sender, EventArgs e)
         {
-            string portalUrl = "https://yandex.ru";
-            driver = new ChromeDriver();
-            var chromeDriver = driver;
-            //chromeDriver.Navigate().GoToUrl(portalUrl);
-            chromeDriver.Manage().Window.Maximize();
-            IWebElement searchInput = chromeDriver.FindElement(By.XPath("//div[contains(@class, 'search')]//input[@id='text']"));
-            searchInput.SendKeys("как писать автотесты" + OpenQA.Selenium.Keys.Enter);
-            //IWebElement searchSubmitBtn = chromeDriver.FindElement(By.XPath("//button[@type='submit']"));
-            //searchSubmitBtn.Click();
-
-
-            var taskFrame = chromeDriver.FindElement(By.XPath("//iframe[@class='side-panel-iframe']"));
-            chromeDriver.SwitchTo().Frame(taskFrame);
-            var delBtn = chromeDriver.FindElement(By.XPath("//span[contains(@class,'task-form-field-item-delete')]"));
-            delBtn.Click();
-            chromeDriver.SwitchTo().DefaultContent();
+            Case_Tasks.CreateTask();
         }
 
         static IWebDriver driver = default;

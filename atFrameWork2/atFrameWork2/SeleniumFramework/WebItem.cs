@@ -1,6 +1,9 @@
-﻿using OpenQA.Selenium;
+﻿using Aqua.Selenium.Framework;
+using atFrameWork2.BaseFramework.LogTools;
+using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -8,58 +11,93 @@ namespace atFrameWork2.SeleniumFramework
 {
     class WebItem
     {
-        public WebItem(List<string> locators, string description, IWebDriver driver)
+        public WebItem(string locator, string description) : this(new List<string> { locator }, description) 
+        { 
+        }
+
+        public WebItem(List<string> locators, string description)
         {
             Locators = locators;
             Description = description;
-            drv = driver;
         }
 
-        IWebDriver drv;
         List<string> Locators { get; set; } = new List<string>();
         public string Description { get; set; }
 
-        public void Click()
+        public void Click(IWebDriver driver)
         {
-            Execute(button => button.Click());
+            PrintActionInfo(nameof(Click));
+
+            Execute(button =>
+            {
+                BorderHighlight.Highlight(button, Color.Red);
+                button.Click();
+            }, driver);
         }
 
-        public void SendKeys(string textToInput)
+        public void SendKeys(string textToInput, IWebDriver driver)
         {
-            Execute(input => input.SendKeys(textToInput));
+            PrintActionInfo(nameof(SendKeys));
+            Execute(input => 
+            { 
+                BorderHighlight.Highlight(input, Color.Blue);
+                input.SendKeys(textToInput); 
+            }, driver);
         }
 
-        void Execute(Action<IWebElement> seleniumCode)
+        public void SwitchToFrame(IWebDriver driver)
+        {
+            PrintActionInfo(nameof(SwitchToFrame));
+            Execute(frame =>
+            {
+                BorderHighlight.Highlight(frame, Color.Green);
+                driver.SwitchTo().Frame(frame);
+            }, driver);
+        }
+
+        void Execute(Action<IWebElement> seleniumCode, IWebDriver driver)
         {
             foreach (var locator in Locators)
             {
-                try
+                int staleRetryCount = 3;
+
+                for (int i = 0; i < staleRetryCount; i++)
                 {
-                    IWebElement searchSubmitBtn = drv.FindElement(By.XPath(locator));
-                    seleniumCode.Invoke(searchSubmitBtn);
+                    try
+                    {
+                        IWebElement targetElement = driver.FindElement(By.XPath(locator));
+                        seleniumCode.Invoke(targetElement);
+                        break;
+                    }
+                    catch (WebDriverException ex)
+                    {
+                        if (ex is NoSuchElementException)
+                        {
+                            if (locator == Locators.Last())
+                            {
+                                throw;
+                            }
+                        }
+                        else if (ex is StaleElementReferenceException)
+                        {
+                            continue;
+                        }
+                        //else if (ex is ElementClickInterceptedException)
+                        //{
+
+                        //}
+                        else
+                            throw;
+                    }
+
                     break;
                 }
-                catch (WebDriverException ex)
-                {
-                    if (ex is NoSuchElementException)
-                    {
-                        if (locator == Locators.Last())
-                        {
-                            //прерываем кейс!!1111
-                        }
-                    }
-                    else if (ex is StaleElementReferenceException)
-                    {
-
-                    }
-                    else if (ex is ElementClickInterceptedException)
-                    {
-
-                    }
-                    else
-                        throw;
-                }
             }
+        }
+
+        private void PrintActionInfo(string actionTitle)
+        {
+            Log.Info($"{actionTitle}: '{Description}' локаторы: {string.Join(", ", Locators)}");
         }
     }
 }
