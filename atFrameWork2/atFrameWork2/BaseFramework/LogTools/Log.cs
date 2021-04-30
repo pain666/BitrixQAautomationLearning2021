@@ -21,7 +21,7 @@ namespace atFrameWork2.BaseFramework.LogTools
 
         static void Add(LogMessage message)
         {
-            string recordContent = $"[{DateTime.Now}][{message.MsgType}]{message.Text}";
+            string recordContent = $"[{DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss.fff")}][{message.MsgType}]{message.Text}";
             File.AppendAllLines(logPath, new List<string> { recordContent });
         }
     }

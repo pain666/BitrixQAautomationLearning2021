@@ -16,7 +16,9 @@ namespace atFrameWork2.TestCases
         {
             return new List<TestCase>
             {
-                new TestCase("Создание задачи", (driver, homePage) => CreateTask(driver, homePage))
+                new TestCase("Создание задачи", (driver, homePage) => CreateTask(driver, homePage)),
+                new TestCase("Редактирование задачи", (driver, homePage) => throw new NotImplementedException("Заглушка теста редактирования задачи")),
+                new TestCase("Удаление задачи", (driver, homePage) => throw new NotImplementedException("Заглушка теста удаления задачи")),
             };
         }
 
@@ -24,6 +26,9 @@ namespace atFrameWork2.TestCases
         {
             homePage.LeftMenu
                 .OpenSection(PortalLeftMenu.Tasks);
+            
+            //TODO переписать на пейджобдждект как сверху
+            //
             //в гриде ткнуть доллбавить задачу 
             var btnAddTask = new WebItem("//a[@id='tasks-buttonAdd']", "Кнопка добавления задачи");
             btnAddTask.Click(driver);
@@ -34,27 +39,28 @@ namespace atFrameWork2.TestCases
             var inputTaskTitle = new WebItem("//input[@data-bx-id='task-edit-title']", "Текстбокс названия задачи");
             var task = new Bitrix24Task("testTasks" + DateTime.Now.Ticks) { Description = "Какой то дескрипгш" + +DateTime.Now.Ticks };
             inputTaskTitle.SendKeys(task.Title, driver);
-            var editorFrame = new WebItem("//iframe[@class='bx-editor-iframe']", "Фрейм редактора текста");// 
+            var editorFrame = new WebItem("//iframe[@class='bx-editor-iframe']", "Фрейм редактора текста");
             editorFrame.SwitchToFrame(driver);
             var body = new WebItem("//body", "Это просто бади какой то");
             body.SendKeys(task.Description, driver);
-            driver.SwitchTo().DefaultContent();//TODO добавить метод свича в дефолтконтент в драйверАшнс
+            driver.SwitchTo().DefaultContent();
             sliderFrame.SwitchToFrame(driver);
             //сохранить 
             var btnSaveTask = new WebItem("//button[@data-bx-id='task-edit-submit' and @class='ui-btn ui-btn-success']", "Кнопка сохранения задачи");
             btnSaveTask.Click(driver);
-            driver.SwitchTo().DefaultContent();//TODO добавить метод свича в дефолтконтент в драйверАшнс
+            driver.SwitchTo().DefaultContent();
             var gridTaskLink = new WebItem($"//a[contains(text(), '{task.Title}') and contains(@class, 'task-title')]", 
-                $"Кнопка сохранения задачи '{task.Title}'");
+                $"Ссылка на задачу '{task.Title}' в гриде");
             gridTaskLink.Click(driver);
             sliderFrame.SwitchToFrame(driver);
             //открыть задачу, ассертнуть тайтл и дескрипшн
             var taskTitleArea = new WebItem($"//div[@class='tasks-iframe-header']//span[@id='pagetitle']",
-                "Область заголовка задачи");
-            taskTitleArea.AssertTextContains(driver, task.Title + "www", "Название задачи отображается неверно");
+                "Область заголовка задачи"); 
+            taskTitleArea.WaitElementDisplayed(driver, 10);
+            taskTitleArea.AssertTextContains(driver, task.Title, "Название задачи отображается неверно");
             var taskDescriptionArea = new WebItem($"//div[@id='task-detail-description']",
                 "Область описания задачи");
-            taskDescriptionArea.AssertTextContains(driver, task.Description + "weweg", "Название задачи отображается неверно");
+            taskDescriptionArea.AssertTextContains(driver, task.Description, "Название задачи отображается неверно");
         }
     }
 }

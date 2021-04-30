@@ -6,6 +6,7 @@ using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 
 namespace atFrameWork2.BaseFramework
 {
@@ -15,25 +16,38 @@ namespace atFrameWork2.BaseFramework
         {
             Title = title ?? throw new ArgumentNullException(nameof(title));
             Body = body ?? throw new ArgumentNullException(nameof(body));
+            Node = new TreeNode(title);
         }
 
-        public void Execute()
+        public void Execute(Uri selenoidHubUri, PortalInfo testPortal)
         {
+            IWebDriver driver = default;
+
             try
             {
-                IWebDriver driver = DriverActions.GetNewDriver();
-                var admin = new User() { Login = "qa-at-learning@mail.bx24.net", Password = "^YHN7ujm*IK<" };
-                var portalLoginPage = new PortalLoginPage(driver, new PortalInfo(new Uri("https://bxprod77.bitrix24.ru/"), admin));
-                var homePage = portalLoginPage.Login(admin);
+                Log.Info($"---------------Запуск кейса '{Title}'---------------");
+                driver = DriverActions.GetNewDriver(selenoidHubUri);
+                var portalLoginPage = new PortalLoginPage(driver, testPortal);
+                var homePage = portalLoginPage.Login(testPortal.PortalAdmin);
                 Body.Invoke(driver, homePage);
             }
             catch (Exception e)
             {
                 Log.Error($"Кейс не пройден, причина:{Environment.NewLine}{e}");
             }
+
+            Log.Info($"---------------Кейс '{Title}' завершён---------------");
+
+            try
+            {
+                if (driver != default)
+                    driver.Quit();
+            }
+            catch (Exception) { }
         }
 
         public string Title { get; set; }
         Action<IWebDriver, PortalHomePage> Body { get; set; }
+        public TreeNode Node { get; set; }
     }
 }

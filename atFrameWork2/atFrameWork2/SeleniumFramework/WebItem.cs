@@ -1,4 +1,5 @@
 ﻿using Aqua.Selenium.Framework;
+using atFrameWork2.BaseFramework;
 using atFrameWork2.BaseFramework.LogTools;
 using OpenQA.Selenium;
 using System;
@@ -26,6 +27,7 @@ namespace atFrameWork2.SeleniumFramework
 
         public void Click(IWebDriver driver)
         {
+            WaitElementDisplayed(driver);
             PrintActionInfo(nameof(Click));
 
             Execute(button =>
@@ -37,7 +39,9 @@ namespace atFrameWork2.SeleniumFramework
 
         public void SendKeys(string textToInput, IWebDriver driver)
         {
+            WaitElementDisplayed(driver);
             PrintActionInfo(nameof(SendKeys));
+
             Execute(input => 
             { 
                 BorderHighlight.Highlight(input, Color.Blue);
@@ -71,6 +75,45 @@ namespace atFrameWork2.SeleniumFramework
             }, driver);
         }
 
+        public bool WaitElementDisplayed(IWebDriver driver, int maxWait_s = 5)
+        {
+            return WaitDisplayedCommon(driver, maxWait_s, true, "Ожидание отображения элемента " + DescriptionFull);
+        }
+
+        public bool WaitWhileElementDisplayed(IWebDriver driver, int maxWait_s = 5)
+        {
+            return WaitDisplayedCommon(driver, maxWait_s, false, "Ожидание пропадания элемента " + DescriptionFull);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="driver"></param>
+        /// <param name="maxWait_s"></param>
+        /// <param name="waitDirection">Если true то будет ждать пока элемент не станет отображаться, иначе будет ждать пока элемент отображается</param>
+        /// <param name="waitDescription"></param>
+        /// <returns></returns>
+        bool WaitDisplayedCommon(IWebDriver driver, int maxWait_s, bool waitDirection, string waitDescription)
+        {
+            var impWait = driver.Manage().Timeouts().ImplicitWait;
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(500);
+
+            bool result = Waiters.WaitForCondition(() =>
+            {
+                bool expectedState = false;
+
+                Execute(el =>
+                {
+                    expectedState = el.Displayed == waitDirection;
+                }, driver);
+
+                return expectedState;
+            }, 1, maxWait_s, waitDescription);
+
+            driver.Manage().Timeouts().ImplicitWait = impWait;
+            return result;
+        }
+
         void Execute(Action<IWebElement> seleniumCode, IWebDriver driver)
         {
             foreach (var locator in Locators)
@@ -98,10 +141,16 @@ namespace atFrameWork2.SeleniumFramework
                         {
                             continue;
                         }
-                        //else if (ex is ElementClickInterceptedException)
-                        //{
-
-                        //}
+                        else if (ex is ElementClickInterceptedException)
+                        {
+                            if (ex.Message.Contains("helpdesk-notification-popup"))
+                            {
+                                new WebItem("//div[contains(@class, 'popup-close-btn')]", "Кнопка закрытия баннера").Click(driver);
+                                continue;
+                            }
+                            else
+                                throw;
+                        }
                         else
                             throw;
                     }
@@ -113,7 +162,9 @@ namespace atFrameWork2.SeleniumFramework
 
         private void PrintActionInfo(string actionTitle)
         {
-            Log.Info($"{actionTitle}: '{Description}' локаторы: {string.Join(", ", Locators)}");
+            Log.Info($"{actionTitle}: " + DescriptionFull);
         }
+
+        public string DescriptionFull { get => $"'{Description}' локаторы: {string.Join(", ", Locators)}"; }
     }
 }
